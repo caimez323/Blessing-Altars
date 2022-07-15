@@ -2,7 +2,7 @@
     Hey ! thanks for downloading my mod
     I hope you had/will have fun with this version
     Feel free to check the code here
-
+    Lytebringr
     Mod made by caimez_
 --]]
 
@@ -17,20 +17,6 @@ local RoomConfig
 
 local Register
 
-function RemoveFromRegister(entity)
-  for j = 1 ,#Register do
-    if Register[j].Room == game:GetLevel():GetCurrentRoomIndex()
-    and Register[j].Position.X == entity.Position.X
-    and Register[j].Position.Y == entity.Position.Y
-    and Register[j].Entity.Type == entity.Type
-    and Register[j].Entity.Variant == entity.Variant
-    then
-      table.remove(Register,j)
-      break
-    end
-end
-
-
 
 BeggarState = {
   IDLE = 0,
@@ -42,12 +28,138 @@ BeggarState = {
 
 
 
+function RemoveFromRegister(entity) --Delete entity from the register
+  for j = 1 ,#Register do
+    if Register[j].Room == game:GetLevel():GetCurrentRoomIndex()
+    and Register[j].Position.X == entity.Position.X
+    and Register[j].Position.Y == entity.Position.Y
+    and Register[j].Entity.Type == entity.Type
+    and Register[j].Entity.Variant == entity.Variant
+    then
+      table.remove(Register,j)
+      break
+    end
+  end
+end
+
+
+
+
+function SpawnRegister()
+  for j = 1, #Register do 
+    if Register[j].Room == game:GetLevel():GetCurrentRoom() then
+      local entity = Isaac.Spawn(Register[j].Entity.Type, Register[j].Entity.Variant,0,Register[j].Position, Vector(0,0),nil) --Spawn entity from Register
+      if Register[j].Entity.Type == BlessingAltars.ENTITY_BEGGAR then --If spawn the special beggar
+        local beggarFlag = EntityFlag.FLAG_NO_TARGET | EntityFlag.FLAG_NO_STATUS_EFFECTS --Immune
+        entity:ClearEntityFlags(entity:GetEntityFlags())
+        entity:AddEntityFlags(beggarFlag)
+        entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYERONLY
+        entity.SpriteOffset = Vector(0,4) --Fix height of the beggar
+        
+      end
+    end
+  end
+  
+end
+
+function SaveState() --Need to save beggar in Register
+  local player = Isaac.GetPlayer(0)
+  local SaveData =""
+  for j = 1, #Register do
+    SaveData = SaveData
+    ..string.format("%5u",Register[j].Room)
+    ..string.format("%4u",Register[j].Position.X)
+    ..string.format("%4u",Register[j].Position.Y)
+    ..string.format("%4u",Register[j].Entity.Type)
+    ..string.format("%4u",Register[j].Entity.Variant)
+  end
+
+  BlessingAltars:SaveData(SaveData)
+end
+
+
+
+function BlessingAltars:onStarted(fromSave)
+  local player = Isaac.GetPlayer(0)
+  if fromSave then
+    local ModData = BlessingAltars:LoadData()
+    Register ={}
+    for i = 1, ModData:len(), 21 do --Insert in register from the saved data
+      
+      table.insert(Register,
+        {
+          Room  = tonumber(ModData:sub(i,i+4)),
+          Position = Vector(tonumber(ModData:sub(i+5,i+8)), tonumber(ModData:sub(i+9,i+12))),
+          Entity = {Type = tonumber(ModData:sub(i+13,i+16)), Variant = tonumber(ModData:sub(i+17,i+20))}
+        }
+      )
+    end
+    SpawnRegister()--Spawn the register
+    
+  else
+    local level = game:GetLevel()
+    CurStage = level:GetStage()
+  end
+end
+
+BlessingAltars:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, BlessingAltars.onStarted)
+
+
+function BlessingAltars:onRoom()
+  local room = game:GetRoom()
+  --Restart detection
+  if game:GetFrameCount() <= 1 then
+    Register ={}
+  end
+  
+  --NewStage
+  local level = game:GetLevel()
+  if CurStage ~= game:GetLevel() then
+    Register={}
+  end
+  CurStage = level:GetStage()
+  SpawnRegister()
+end
+
+BlessingAltars:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, BlessingAltars.onRoom)
+
+
+--Save on quit
+function BlessingAltars:onExit()
+  SaveState()
+end
+BlessingAltars:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, BlessingAltars.onExit)
+
+--Game may crash
+function BlessingAltars:onLevel()
+  SaveState()
+end
+BlessingAltars:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, BlessingAltars.onLevel)
+ 
+
 function BlessingAltars:onBeggar(entity)
     local player = Isaac.GetPlayer(0)
     
     local entity = entity:ToNPC()
     local sprite = entity:GetSprite() --To play animation
     local data = entity:GetData()
+    local beggarFlag = EntityFlag.FLAG_NO_TARGET | EntityFlag.FLAG_NO_STATUS_EFFECTS --Immune
+    
+    if entity:GetEntityFlags()~= beggarFlag then --Just spawned, not in the Register
+     
+     entity:ClearEntityFlags(entity:GetEntityFlags())
+     entity:AddEntityFlags(beggarFlag)
+     entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYERONLY
+     entity.SpriteOffset = Vector(0,4)
+     local roomIndex = game:GetLevel():GetCurrentRoomIndex()
+     table.insert(Register,
+       {
+         Room = roomIndex,
+         Position = entity.Position,
+         Entity = {Type = entity.Type, Variant = entity.Variant}
+        }
+      )s
+    end
     
     
     if data.Position == nil then 
@@ -103,6 +215,7 @@ function BlessingAltars:onBeggar(entity)
       elseif sprite:IsFinished("Prize") then
         --Disapear if payout
         if entity:GetData().Payout then
+          RemoveFromRegister(entity)
           entity.State = BeggarState.TELEPORT
           --Sound
         else
@@ -126,8 +239,10 @@ function BlessingAltars:onBeggar(entity)
 BlessingAltars:AddCallback(ModCallbacks.MC_NPC_UPDATE,BlessingAltars.onBeggar, BlessingAltars.ENTITY_BEGGAR)
 
 
-
 function BlessingAltars:onBeggarDamage(target, dmg, flag, source, countdown)
   return false
 end
 BlessingAltars:AddCallback(ModCallbacks.MC_NPC_UPDATE,BlessingAltars.onBeggarDamage, BlessingAltars.ENTITY_BEGGAR)
+
+BlessingAltars:onRoom()
+BlessingAltars:onLevel()
