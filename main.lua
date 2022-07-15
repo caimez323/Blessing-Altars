@@ -46,8 +46,12 @@ end
 
 
 function SpawnRegister()
-  for j = 1, #Register do 
-    if Register[j].Room == game:GetLevel():GetCurrentRoom() then
+  Isaac.ConsoleOutput("spawn")
+  Isaac.ConsoleOutput(#Register)
+  Isaac.ConsoleOutput("\n")
+  for j = 1, #Register do
+    
+    if Register[j].Room == game:GetLevel():GetCurrentRoomIndex() then
       local entity = Isaac.Spawn(Register[j].Entity.Type, Register[j].Entity.Variant,0,Register[j].Position, Vector(0,0),nil) --Spawn entity from Register
       if Register[j].Entity.Type == BlessingAltars.ENTITY_BEGGAR then --If spawn the special beggar
         local beggarFlag = EntityFlag.FLAG_NO_TARGET | EntityFlag.FLAG_NO_STATUS_EFFECTS --Immune
@@ -65,7 +69,10 @@ end
 function SaveState() --Need to save beggar in Register
   local player = Isaac.GetPlayer(0)
   local SaveData =""
-  for j = 1, #Register do
+  
+    Isaac.ConsoleOutput("\nregister")
+    Isaac.ConsoleOutput(#Register)
+  for j = 1, #Register  do
     SaveData = SaveData
     ..string.format("%5u",Register[j].Room)
     ..string.format("%4u",Register[j].Position.X)
@@ -73,7 +80,8 @@ function SaveState() --Need to save beggar in Register
     ..string.format("%4u",Register[j].Entity.Type)
     ..string.format("%4u",Register[j].Entity.Variant)
   end
-
+Isaac.ConsoleOutput(#SaveData)
+Isaac.ConsoleOutput("\n")
   BlessingAltars:SaveData(SaveData)
 end
 
@@ -94,6 +102,8 @@ function BlessingAltars:onStarted(fromSave)
         }
       )
     end
+    
+    
     SpawnRegister()--Spawn the register
     
   else
@@ -111,10 +121,9 @@ function BlessingAltars:onRoom()
   if game:GetFrameCount() <= 1 then
     Register ={}
   end
-  
   --NewStage
   local level = game:GetLevel()
-  if CurStage ~= game:GetLevel() then
+  if CurStage ~= level:GetStage() then
     Register={}
   end
   CurStage = level:GetStage()
@@ -132,7 +141,7 @@ BlessingAltars:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, BlessingAltars.onExit)
 
 --Game may crash
 function BlessingAltars:onLevel()
-  SaveState()
+  --SaveState()
 end
 BlessingAltars:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, BlessingAltars.onLevel)
  
@@ -145,8 +154,9 @@ function BlessingAltars:onBeggar(entity)
     local data = entity:GetData()
     local beggarFlag = EntityFlag.FLAG_NO_TARGET | EntityFlag.FLAG_NO_STATUS_EFFECTS --Immune
     
+    
+    
     if entity:GetEntityFlags()~= beggarFlag then --Just spawned, not in the Register
-     
      entity:ClearEntityFlags(entity:GetEntityFlags())
      entity:AddEntityFlags(beggarFlag)
      entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYERONLY
@@ -158,7 +168,7 @@ function BlessingAltars:onBeggar(entity)
          Position = entity.Position,
          Entity = {Type = entity.Type, Variant = entity.Variant}
         }
-      )s
+      )
     end
     
     
@@ -232,7 +242,6 @@ function BlessingAltars:onBeggar(entity)
       end
       
     end
-    
     entity.StateFrame = entity.StateFrame + 1
   end 
 
