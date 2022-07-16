@@ -20,6 +20,10 @@ local RoomConfig
 local Register
 
 
+local Bonus={
+  Speed=0,
+}
+
 BeggarState = {
   IDLE = 0,
   PAYNOTHING = 2,
@@ -60,7 +64,7 @@ function SpawnRegister()
         entity:ClearEntityFlags(entity:GetEntityFlags())
         entity:AddEntityFlags(beggarFlag)
         entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYERONLY
-        entity.SpriteOffset = Vector(0,4) --Fix height of the beggar
+        --entity.SpriteOffset = Vector(0,4) --Fix height of the beggar
         
       end
     end
@@ -162,7 +166,7 @@ function BlessingAltars:onBeggar(entity)
      entity:ClearEntityFlags(entity:GetEntityFlags())
      entity:AddEntityFlags(beggarFlag)
      entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYERONLY
-     entity.SpriteOffset = Vector(0,4)
+     --entity.SpriteOffset = Vector(0,4)
      local roomIndex = game:GetLevel():GetCurrentRoomIndex()
      table.insert(Register,
        {
@@ -221,7 +225,9 @@ function BlessingAltars:onBeggar(entity)
       elseif sprite:IsEventTriggered("Prize") then
         if entity.Variant == 0 then
           --reward
-          player:AddCoins(10)
+          Bonus.Speed = Bonus.Speed + 1
+          player.MoveSpeed = player.MoveSpeed + 0.05
+          player:EvaluateItems()
           entity:GetData().Payout = true 
         end
       elseif sprite:IsFinished("Prize") then
@@ -261,6 +267,76 @@ function BlessingAltars:onBeggarDamage(target, dmg, flag, source, countdown)
   return false
 end
 BlessingAltars:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG,BlessingAltars.onBeggarDamage, BlessingAltars.ENTITY_BEGGAR)
+
+
+
+
+function BlessingAltars:onEvaluate(player,cacheFlag)
+
+local player = Isaac.GetPlayer(0)
+if cacheFlag == CacheFlag.CACHE_SPEED then
+  player.MoveSpeed = player.MoveSpeed + (0.05 * Bonus.Speed)
+end
+
+end
+
+BlessingAltars:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BlessingAltars.onEvaluate)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 BlessingAltars:onRoom()
 BlessingAltars:onLevel()
