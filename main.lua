@@ -12,6 +12,8 @@ local game = Game()
 local hud = game:GetHUD()
 local sound = SFXManager()
 
+BlessingAltars.ENTITY_BEGGAR= Isaac.GetEntityTypeByName("Speed Altar")
+
 local CurStage
 local RoomConfig
 
