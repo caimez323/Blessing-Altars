@@ -126,6 +126,7 @@ function BlessingAltars:onRoom()
   --Restart detection
   if game:GetFrameCount() <= 1 then
     Register ={}
+    Bonus.Speed = 0 
   end
   --NewStage
   local level = game:GetLevel()
