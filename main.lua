@@ -52,9 +52,6 @@ end
 
 
 function SpawnRegister()
-  Isaac.ConsoleOutput("spawn")
-  Isaac.ConsoleOutput(#Register)
-  Isaac.ConsoleOutput("\n")
   for j = 1, #Register do
     
     if Register[j].Room == game:GetLevel():GetCurrentRoomIndex() then
@@ -76,8 +73,6 @@ function SaveState() --Need to save beggar in Register
   local player = Isaac.GetPlayer(0)
   local SaveData =""
   
-    Isaac.ConsoleOutput("\nregister")
-    Isaac.ConsoleOutput(#Register)
   for j = 1, #Register  do
     SaveData = SaveData
     ..string.format("%5u",Register[j].Room)
@@ -86,8 +81,6 @@ function SaveState() --Need to save beggar in Register
     ..string.format("%4u",Register[j].Entity.Type)
     ..string.format("%4u",Register[j].Entity.Variant)
   end
-Isaac.ConsoleOutput(#SaveData)
-Isaac.ConsoleOutput("\n")
   BlessingAltars:SaveData(SaveData)
 end
 
