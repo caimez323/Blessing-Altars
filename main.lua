@@ -251,6 +251,12 @@ BlessingAltars:AddCallback(ModCallbacks.MC_NPC_UPDATE,BlessingAltars.onBeggar, B
 
 
 function BlessingAltars:onBeggarDamage(target, dmg, flag, source, countdown)
+  if DamageFlag.DAMAGE_EXPLOSION > 0 then
+    --Dead
+    RemoveFromRegister(target)
+  else
+    return 1
+  end
   return false
 end
 BlessingAltars:AddCallback(ModCallbacks.MC_NPC_UPDATE,BlessingAltars.onBeggarDamage, BlessingAltars.ENTITY_BEGGAR)
