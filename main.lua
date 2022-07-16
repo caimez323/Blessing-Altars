@@ -22,6 +22,7 @@ local Register
 
 local Bonus={
   Speed=0,
+  Luck=0,
 }
 
 BeggarState = {
@@ -120,6 +121,7 @@ function BlessingAltars:onRoom()
   if game:GetFrameCount() <= 1 then
     Register ={}
     Bonus.Speed = 0 
+    Bonus.Luck = 0 
   end
   --NewStage
   local level = game:GetLevel()
@@ -184,14 +186,12 @@ function BlessingAltars:onBeggar(entity)
       end
       
       if (entity.Position - player.Position):Length() <= entity.Size + player.Size then --Collision between beggar and player
-        if entity.Variant == 0 and player:GetNumCoins() > 0 then
+        if player:GetNumCoins() > 0 then --   entity.Variant == 0 and               Can modify prince depending on the variant
           sound:Play(SoundEffect.SOUND_SCAMPER, 1, 0, false,1)
           player:AddCoins(-1)
           --No need to check a RNG since it's 100% chance
           entity.State = BeggarState.PAYPRIZE
           entity.StateFrame = -1
-          
-        --if entity.Variant = 1 then give another boost
         end
         
       end
@@ -217,13 +217,21 @@ function BlessingAltars:onBeggar(entity)
       if entity.StateFrame == 0 then
         sprite:Play("Prize",false)
       elseif sprite:IsEventTriggered("Prize") then
+        
+        --reward depend on the variant
+        
         if entity.Variant == 0 then
-          --reward
           Bonus.Speed = Bonus.Speed + 1
           player.MoveSpeed = player.MoveSpeed + 0.05
-          player:EvaluateItems()
-          entity:GetData().Payout = true 
+          
+        elseif entity.Variant == 1 then
+          Bonus.Luck = Bonus.Luck + 1
+          player.Luck = player.Luck + 0.5
         end
+        
+        player:EvaluateItems()
+        entity:GetData().Payout = true 
+        
       elseif sprite:IsFinished("Prize") then
         --Disapear if payout
         if entity:GetData().Payout then
@@ -267,10 +275,13 @@ BlessingAltars:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG,BlessingAltars.onBegg
 
 function BlessingAltars:onEvaluate(player,cacheFlag)
 
-local player = Isaac.GetPlayer(0)
-if cacheFlag == CacheFlag.CACHE_SPEED then
-  player.MoveSpeed = player.MoveSpeed + (0.05 * Bonus.Speed)
-end
+  local player = Isaac.GetPlayer(0)
+  if cacheFlag == CacheFlag.CACHE_SPEED then
+    player.MoveSpeed = player.MoveSpeed + (0.05 * Bonus.Speed)
+  end
+  if cacheFlag == CacheFlag.CACHE_LUCK then
+    player.Luck = player.Luck + (0.5 * Bonus.Luck)
+  end
 
 end
 
