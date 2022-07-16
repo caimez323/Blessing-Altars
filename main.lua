@@ -252,14 +252,15 @@ BlessingAltars:AddCallback(ModCallbacks.MC_NPC_UPDATE,BlessingAltars.onBeggar, B
 
 function BlessingAltars:onBeggarDamage(target, dmg, flag, source, countdown)
   if DamageFlag.DAMAGE_EXPLOSION > 0 then
+    Isaac.ConsoleOutput("dmg")
     --Dead
-    RemoveFromRegister(target)
+    --RemoveFromRegister(target)
   else
     return 1
   end
   return false
 end
-BlessingAltars:AddCallback(ModCallbacks.MC_NPC_UPDATE,BlessingAltars.onBeggarDamage, BlessingAltars.ENTITY_BEGGAR)
+BlessingAltars:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG,BlessingAltars.onBeggarDamage, BlessingAltars.ENTITY_BEGGAR)
 
 BlessingAltars:onRoom()
 BlessingAltars:onLevel()
