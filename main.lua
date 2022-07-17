@@ -24,7 +24,7 @@ local BONUS_CAP={
  LUCK = 8,
  DAMAGE = 12,
  ABILITY = 20,
- TANK = 20,
+ TENACITY = 20,
 }
 
 
@@ -33,7 +33,7 @@ local Bonus={
   Luck=0,
   Damage = 0,
   Ability = 0,
-  Tank = 0,
+  Tenacity = 0,
 }
 
 BeggarState = {
@@ -135,7 +135,7 @@ function BlessingAltars:onRoom()
     Bonus.Luck = 0 
     Bonus.Damage = 0
     Bonus.Ability = 0
-    Bonus.Tank = 0
+    Bonus.Tenacity = 0
     Isaac.GetPlayer(0):AddCoins(15)
   end
   --NewStage
@@ -250,6 +250,8 @@ function BlessingAltars:onBeggar(entity)
         elseif entity.Variant == 3 and Bonus.Ability < BONUS_CAP.ABILITY then
           Bonus.Ability = Bonus.Ability + 1
           
+        elseif entity.Variant == 4 and Bonus.Tenacity < BONUS_CAP.TENACITY then
+          Bonus.Tenacity = Bonus.Tenacity + 1
           
         end
         
@@ -283,16 +285,18 @@ BlessingAltars:AddCallback(ModCallbacks.MC_NPC_UPDATE,BlessingAltars.onBeggar, B
 
 
 function BlessingAltars:onBeggarDamage(target, dmg, flag, source, countdown)
-  --[[if DamageFlag.DAMAGE_EXPLOSION > 0 then
-    Isaac.ConsoleOutput("dmg")
-    --Dead
-    --RemoveFromRegister(target)
-  else
-    return 1
-  end--]]
   return false
 end
 BlessingAltars:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG,BlessingAltars.onBeggarDamage, BlessingAltars.ENTITY_BEGGAR)
+
+
+function BlessingAltars:onPlayerDamage(target, dmg, flag, source, countdown)
+  if Bonus.Tenacity > 0 then
+    
+    return false
+  end
+end
+BlessingAltars:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG,BlessingAltars.onPlayerDamage, EntityType.ENTITY_PLAYER)
 
 
 
@@ -313,12 +317,6 @@ function BlessingAltars:onEvaluate(player,cacheFlag)
 end
 
 BlessingAltars:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BlessingAltars.onEvaluate)
-
-
-
-
-
-
 
 
 
