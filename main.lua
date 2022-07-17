@@ -317,8 +317,8 @@ BlessingAltars:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BlessingAltars.onEval
 function BlessingAltars:onUpdate()
   local player = Isaac.GetPlayer(0)
   
-  if Bonus.Ability > 0 and player.FireDelay == 0.0 and player:GetShootingJoystick():Length() > 0.1 then
-    Isaac.Spawn(EntityType.ENTITY_TEAR,0,0, player.Position, player:GetShootingJoystick():Normalized()*14 + player.Velocity, player):ToTear()
+  if Bonus.Ability > 0 and player.FireDelay <= player.MaxFireDelay and player.FireDelay > (player.MaxFireDelay-1) and player:GetShootingJoystick():Length() > 0.1 then
+    Isaac.Spawn(EntityType.ENTITY_TEAR,0,0, player.Position, player:GetShootingJoystick():Normalized()*(10*player.ShotSpeed) + player.Velocity, player):ToTear()
   end
   
 end
