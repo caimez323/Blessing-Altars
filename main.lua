@@ -318,7 +318,8 @@ function BlessingAltars:onUpdate()
   local player = Isaac.GetPlayer(0)
   
   if Bonus.Ability > 0 and player.FireDelay <= player.MaxFireDelay and player.FireDelay > (player.MaxFireDelay-1) and player:GetShootingJoystick():Length() > 0.1 then
-    Isaac.Spawn(EntityType.ENTITY_TEAR,0,0, player.Position, player:GetShootingJoystick():Normalized()*(10*player.ShotSpeed) + player.Velocity, player):ToTear()
+    local spawnedTear = Isaac.Spawn(EntityType.ENTITY_TEAR,0,0, player.Position, player:GetShootingJoystick():Normalized()*(10*player.ShotSpeed) + player.Velocity, player):ToTear()
+    spawnedTear.TearFlags = player.TearFlags
   end
   
 end
