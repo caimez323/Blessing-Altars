@@ -331,7 +331,8 @@ function BlessingAltars:onUpdate()
   if Bonus.Ability > 0 and player.FireDelay <= player.MaxFireDelay and player.FireDelay > (player.MaxFireDelay-1) and player:GetShootingJoystick():Length() > 0.1 and not player:HasCollectible(678) then
     local rng = math.random(1, 21 - Bonus.Ability)
     if rng == 1 then
-      player:FireTear(player.Position,player:GetShootingJoystick():Normalized()*(10*player.ShotSpeed),true,false,false)
+      local speed = math.random(8,14)
+      player:FireTear(player.Position,player:GetShootingJoystick():Normalized()*(speed*player.ShotSpeed),true,false,false)
     end
     
   end
