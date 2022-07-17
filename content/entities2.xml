@@ -11,5 +11,9 @@
 		<gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0" />
   </entity>
   
+  <entity anm2path="AbilityAltar.anm2" baseHP="1" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="600" name="Ability Altar" numGridCollisionPoints="24" shadowSize="5" stageHP="0" variant="3" shutdoors="false">
+		<gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0" />
+  </entity>
+  
   
 </entities>

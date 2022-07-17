@@ -24,6 +24,7 @@ local Bonus={
   Speed=0,
   Luck=0,
   Damage = 0,
+  Ability = 0,
 }
 
 BeggarState = {
@@ -124,6 +125,7 @@ function BlessingAltars:onRoom()
     Bonus.Speed = 0 
     Bonus.Luck = 0 
     Bonus.Damage = 0
+    Bonus.Ability = 0
   end
   --NewStage
   local level = game:GetLevel()
@@ -307,7 +309,17 @@ BlessingAltars:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BlessingAltars.onEval
 
 
 
-
+function BlessingAltars:onUpdate()
+  local player = Isaac.GetPlayer(0)
+  
+  if Bonus.Ability and player:GetShootingJoystick():Length() > 0.1 then
+    Isaac.ConsoleOutput("piew")
+  end
+  
+  
+  
+end
+BlessingAltars:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE,BlessingAltars.onUpdate)
 
 
 

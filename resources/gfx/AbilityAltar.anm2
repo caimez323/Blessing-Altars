@@ -1,8 +1,8 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="17/07/2022 13:35:23" Version="9" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="17/07/2022 13:35:14" Version="9" Fps="30"/>
 	<Content>
 		<Spritesheets>
-			<Spritesheet Path="DamageAltar.png" Id="0"/>
+			<Spritesheet Path="AbilityAltar.png" Id="0"/>
 		</Spritesheets>
 		<Layers>
 			<Layer Name="Sign" Id="0" SpritesheetId="0"/>
