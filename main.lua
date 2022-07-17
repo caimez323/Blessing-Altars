@@ -23,6 +23,7 @@ local Register
 local Bonus={
   Speed=0,
   Luck=0,
+  Damage = 0,
 }
 
 BeggarState = {
@@ -122,6 +123,7 @@ function BlessingAltars:onRoom()
     Register ={}
     Bonus.Speed = 0 
     Bonus.Luck = 0 
+    Bonus.Damage = 0
   end
   --NewStage
   local level = game:GetLevel()
@@ -227,6 +229,10 @@ function BlessingAltars:onBeggar(entity)
         elseif entity.Variant == 1 then
           Bonus.Luck = Bonus.Luck + 1
           player.Luck = player.Luck + 0.5
+          
+        elseif entity.Variant == 2 then
+          Bonus.Damage = Bonus.Damage + 1
+          player.Damage = player.Damage + (1/3)
         end
         
         player:EvaluateItems()
@@ -281,6 +287,9 @@ function BlessingAltars:onEvaluate(player,cacheFlag)
   end
   if cacheFlag == CacheFlag.CACHE_LUCK then
     player.Luck = player.Luck + (0.5 * Bonus.Luck)
+  end
+  if cacheFlag == CacheFlag.CACHE_DAMAGE then
+    player.Damage = player.Damage + ((1/3) * Bonus.Damage)
   end
 
 end
