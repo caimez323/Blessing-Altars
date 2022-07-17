@@ -20,11 +20,11 @@ local RoomConfig
 local Register
 
 local BONUS_CAP={
- SPEED = 10
- LUCK = 8
- DAMAGE = 12
- ABILITY = 20
- TANK = 20
+ SPEED = 10,
+ LUCK = 8,
+ DAMAGE = 12,
+ ABILITY = 20,
+ TANK = 20,
 }
 
 
@@ -33,6 +33,7 @@ local Bonus={
   Luck=0,
   Damage = 0,
   Ability = 0,
+  Tank = 0,
 }
 
 BeggarState = {
@@ -134,6 +135,7 @@ function BlessingAltars:onRoom()
     Bonus.Luck = 0 
     Bonus.Damage = 0
     Bonus.Ability = 0
+    Bonus.Tank = 0
     Isaac.GetPlayer(0):AddCoins(15)
   end
   --NewStage
@@ -326,18 +328,9 @@ BlessingAltars:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BlessingAltars.onEval
 function BlessingAltars:onUpdate()
   local player = Isaac.GetPlayer(0)
   
-  if Bonus.Ability > 0 and player.FireDelay <= player.MaxFireDelay and player.FireDelay > (player.MaxFireDelay-1) and player:GetShootingJoystick():Length() > 0.1 then
-    local TearData
-    --[[for _, entity in pairs(Isaac.GetRoomEntities()) do
-          if entity.Type == EntityType.ENTITY_TEAR then
-            TearData = entity:GetData()
-          end   
-    end
-    --]]
-    local spawnedTear = Isaac.Spawn(EntityType.ENTITY_TEAR,0,0, player.Position, player:GetShootingJoystick():Normalized()*(14*player.ShotSpeed) + player.Velocity, player):ToTear()
-    
-    spawnedTear.TearFlags = player.TearFlags
-    
+  if Bonus.Ability > 0 and player.FireDelay <= player.MaxFireDelay and player.FireDelay > (player.MaxFireDelay-1) and player:GetShootingJoystick():Length() > 0.1 and not player:HasCollectible(678) then
+   -- local spawnedTear = Isaac.Spawn(EntityType.ENTITY_TEAR,0,0, player.Position, player:GetShootingJoystick():Normalized()*(14*player.ShotSpeed) + player.Velocity, player):ToTear()
+    player:FireTear(player.Position,player:GetShootingJoystick():Normalized()*(10*player.ShotSpeed),true,false,false)
   end
   
 end
