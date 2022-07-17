@@ -126,6 +126,7 @@ function BlessingAltars:onRoom()
     Bonus.Luck = 0 
     Bonus.Damage = 0
     Bonus.Ability = 0
+    Isaac.GetPlayer(0):AddCoins(15)
   end
   --NewStage
   local level = game:GetLevel()
@@ -235,6 +236,10 @@ function BlessingAltars:onBeggar(entity)
         elseif entity.Variant == 2 then
           Bonus.Damage = Bonus.Damage + 1
           player.Damage = player.Damage + (1/3)
+          
+        elseif entity.Variant == 3 then
+          Bonus.Ability = Bonus.Ability + 1
+          
         end
         
         player:EvaluateItems()
@@ -312,11 +317,9 @@ BlessingAltars:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BlessingAltars.onEval
 function BlessingAltars:onUpdate()
   local player = Isaac.GetPlayer(0)
   
-  if Bonus.Ability and player:GetShootingJoystick():Length() > 0.1 then
-    Isaac.ConsoleOutput("piew")
+  if Bonus.Ability > 0 and player.FireDelay == 0.0 and player:GetShootingJoystick():Length() > 0.1 then
+    Isaac.Spawn(EntityType.ENTITY_TEAR,0,0, player.Position, player:GetShootingJoystick():Normalized()*14 + player.Velocity, player):ToTear()
   end
-  
-  
   
 end
 BlessingAltars:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE,BlessingAltars.onUpdate)
