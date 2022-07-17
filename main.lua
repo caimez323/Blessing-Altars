@@ -19,6 +19,14 @@ local RoomConfig
 
 local Register
 
+local BONUS_CAP={
+ SPEED = 10
+ LUCK = 8
+ DAMAGE = 12
+ ABILITY = 20
+ TANK = 20
+}
+
 
 local Bonus={
   Speed=0,
@@ -225,20 +233,21 @@ function BlessingAltars:onBeggar(entity)
         
         --reward depend on the variant
         
-        if entity.Variant == 0 then
+        if entity.Variant == 0 and Bonus.Speed < BONUS_CAP.SPEED then
           Bonus.Speed = Bonus.Speed + 1
           player.MoveSpeed = player.MoveSpeed + 0.05
           
-        elseif entity.Variant == 1 then
+        elseif entity.Variant == 1 and Bonus.Luck < BONUS_CAP.LUCK then
           Bonus.Luck = Bonus.Luck + 1
           player.Luck = player.Luck + 0.5
           
-        elseif entity.Variant == 2 then
+        elseif entity.Variant == 2 and Bonus.Damage < BONUS_CAP.DAMAGE then
           Bonus.Damage = Bonus.Damage + 1
           player.Damage = player.Damage + (1/3)
           
-        elseif entity.Variant == 3 then
+        elseif entity.Variant == 3 and Bonus.Ability < BONUS_CAP.ABILITY then
           Bonus.Ability = Bonus.Ability + 1
+          
           
         end
         
@@ -318,8 +327,17 @@ function BlessingAltars:onUpdate()
   local player = Isaac.GetPlayer(0)
   
   if Bonus.Ability > 0 and player.FireDelay <= player.MaxFireDelay and player.FireDelay > (player.MaxFireDelay-1) and player:GetShootingJoystick():Length() > 0.1 then
-    local spawnedTear = Isaac.Spawn(EntityType.ENTITY_TEAR,0,0, player.Position, player:GetShootingJoystick():Normalized()*(10*player.ShotSpeed) + player.Velocity, player):ToTear()
+    local TearData
+    --[[for _, entity in pairs(Isaac.GetRoomEntities()) do
+          if entity.Type == EntityType.ENTITY_TEAR then
+            TearData = entity:GetData()
+          end   
+    end
+    --]]
+    local spawnedTear = Isaac.Spawn(EntityType.ENTITY_TEAR,0,0, player.Position, player:GetShootingJoystick():Normalized()*(14*player.ShotSpeed) + player.Velocity, player):ToTear()
+    
     spawnedTear.TearFlags = player.TearFlags
+    
   end
   
 end
