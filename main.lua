@@ -292,7 +292,7 @@ BlessingAltars:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG,BlessingAltars.onBegg
 
 function BlessingAltars:onPlayerDamage(target, dmg, flag, source, countdown)
   if Bonus.Tenacity > 0 then
-    if Bonus.Tenacity > math.random(0,100) then
+    if Bonus.Tenacity >= math.random(1,100) then
       return false --Imunity
     end
   end
