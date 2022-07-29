@@ -19,6 +19,8 @@ local RoomConfig
 
 local Register
 
+local EnemiesInRoom
+
 local BONUS_CAP={
  SPEED = 10,
  LUCK = 8,
@@ -137,6 +139,7 @@ function BlessingAltars:onRoom()
     Bonus.Ability = 0
     Bonus.Tenacity = 0
     Isaac.GetPlayer(0):AddCoins(15)
+    EnemiesInRoom = false
   end
   --NewStage
   local level = game:GetLevel()
@@ -145,6 +148,8 @@ function BlessingAltars:onRoom()
   end
   CurStage = level:GetStage()
   SpawnRegister()
+  
+  EnemiesInRoom = room:GetAliveEnemiesCount() > 0
 end
 
 BlessingAltars:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, BlessingAltars.onRoom)
@@ -293,7 +298,7 @@ BlessingAltars:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG,BlessingAltars.onBegg
 function BlessingAltars:onPlayerDamage(target, dmg, flag, source, countdown)
   if Bonus.Tenacity > 0 then
     if Bonus.Tenacity >= math.random(1,100) then
-      return false --Imunity
+      return false --Immunity
     end
   end
 end
@@ -335,6 +340,15 @@ function BlessingAltars:onUpdate()
     end
     
   end
+  
+  local room = game:GetRoom()
+  if room:GetAliveEnemiesCount() == 0 and EnemiesInRoom then
+    Isaac.ConsoleOutput("Cleared")
+    EnemiesInRoom = false
+    --AltarSpawn()
+  end
+  
+  
   
 end
 BlessingAltars:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE,BlessingAltars.onUpdate)
