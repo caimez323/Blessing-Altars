@@ -21,6 +21,8 @@ local Register
 
 local EnemiesInRoom
 
+local previouslySpawned = false
+
 local BONUS_CAP={
  SPEED = 10,
  LUCK = 8,
@@ -335,7 +337,7 @@ function PlayerPos()
 end
 
 
-function AltarSpawn()
+function BlessingAltars:AltarSpawn()
   
   local room = game:GetRoom()
   local startPos = room:GetBottomRightPos()
@@ -343,28 +345,39 @@ function AltarSpawn()
   local player = Isaac.GetPlayer(0)
   local pos = player.Position
   local vel = Vector(0,0)
-  --local bottomRight = Vector(560,400)
   local valid = true
-  --[[Isaac.ConsoleOutput("\n")
-  Isaac.ConsoleOutput(door.X)
-  Isaac.ConsoleOutput(" ,  ")
-  Isaac.ConsoleOutput(door.Y)]]
-  for i = 0, 8 do
-    door = room:GetDoorSlotPosition(i)
-    if (i == 0 or i == 4) and (freePos.X == door.X + 40) and (freePos.Y == door.Y) then
-      valid = false
-    elseif (i == 1 or i == 5) and (freePos.X == door.X) and (freePos.Y == door.Y + 40) then
-      valid = false
-    elseif (i == 2 or i == 6) and (freePos.X == door.X -40 ) and (freePos.Y == door.Y) then
-      valid = false
-    elseif (i == 3 or i == 7) and (freePos.X == door.X) and (freePos.Y == door.Y -40 ) then
-      valid = false
+  if not previouslySpawned then
+    for i = 0, 8 do
+      door = room:GetDoorSlotPosition(i)
+      if (i == 0 or i == 4) and (freePos.X == door.X + 40) and (freePos.Y == door.Y) then
+        valid = false
+      elseif (i == 1 or i == 5) and (freePos.X == door.X) and (freePos.Y == door.Y + 40) then
+        valid = false
+      elseif (i == 2 or i == 6) and (freePos.X == door.X -40 ) and (freePos.Y == door.Y) then
+        valid = false
+      elseif (i == 3 or i == 7) and (freePos.X == door.X) and (freePos.Y == door.Y -40 ) then
+        valid = false
+      end
     end
+    
+    local chanceSpawn
+    
+    if game:GetLevel():GetStage() <=2 then
+      chanceSpawn = 10
+    else
+      chanceSpawn = 5
+    end
+    
+    if not previouslySpawned and valid and (math.random(1,chanceSpawn) == 1) then
+      Isaac.Spawn(BlessingAltars.ENTITY_BEGGAR,math.random(0,4),0,freePos,vel,player)
+      previouslySpawned = true
+    end
+    
+  else
+    previouslySpawned = false
   end
   
-    if valid then
-      Isaac.Spawn(BlessingAltars.ENTITY_BEGGAR,math.random(0,4),0,freePos,vel,player)
-    end
+  
 end
 
 
@@ -386,7 +399,7 @@ function BlessingAltars:onUpdate()
   if room:GetAliveEnemiesCount() == 0 and EnemiesInRoom then
     Isaac.ConsoleOutput("Cleared")
     EnemiesInRoom = false
-    AltarSpawn()
+    BlessingAltars.AltarSpawn()
   end
   
   
