@@ -50,6 +50,52 @@ BeggarState = {
 
 
 
+
+local modSetting = {
+	ChanceSpawn = 4
+}
+
+-- ModConfigMenu
+if ModConfigMenu then
+  Isaac.ConsoleOutput("true")
+  local modName = "Blessing Altars"
+    ModConfigMenu.UpdateCategory(modName, {
+    Info = {
+      "On average, altars spawn 1 in ?? rooms (1 => each room)"
+    }
+    })
+
+  ModConfigMenu.AddTitle(modName, "Settings", " ")
+
+
+  ModConfigMenu.AddSetting(modName, "Settings", { --settingTable
+      Type = ModConfigMenu.OptionType.NUMBER,
+      CurrentSetting = function()
+        return modSetting.ChanceSpawn
+      end,
+      Minimum = 1,
+      Default = modSetting.ChanceSpawn,
+      Display = function()
+        local valeur = modSetting.ChanceSpawn
+        
+        return "Altar spawnrate : 1 in " .. valeur
+      end,
+      OnChange = function(currentNumber)
+        modSetting.ChanceSpawn = currentNumber
+        Isaac.ConsoleOutput(currentNumber)
+      end,
+      Info = function()
+        local spawnRoom = modSetting.ChanceSpawn
+        local TotalText = "Altars will spawn once every " .. spawnRoom .. " rooms."
+        return TotalText
+      end
+    })
+end
+
+
+
+
+
 function RemoveFromRegister(entity) --Delete entity from the register
   for j = 1 ,#Register do
     if Register[j].Room == game:GetLevel():GetCurrentRoomIndex()
