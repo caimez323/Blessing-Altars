@@ -326,7 +326,7 @@ end
 
 BlessingAltars:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BlessingAltars.onEvaluate)
 
-
+--[[
 function PlayerPos()
   local player = Isaac.GetPlayer(0)
   local pos = player.Position
@@ -335,6 +335,7 @@ function PlayerPos()
   Isaac.ConsoleOutput(" ,  ")
   Isaac.ConsoleOutput(pos.Y)
 end
+]]
 
 
 function BlessingAltars:AltarSpawn()
@@ -363,9 +364,9 @@ function BlessingAltars:AltarSpawn()
     local chanceSpawn
     
     if game:GetLevel():GetStage() <=2 then
-      chanceSpawn = 10
+      chanceSpawn = 8
     else
-      chanceSpawn = 5
+      chanceSpawn = 4
     end
     
     if not previouslySpawned and valid and (math.random(1,chanceSpawn) == 1) then
@@ -397,7 +398,6 @@ function BlessingAltars:onUpdate()
   
   local room = game:GetRoom()
   if room:GetAliveEnemiesCount() == 0 and EnemiesInRoom then
-    Isaac.ConsoleOutput("Cleared")
     EnemiesInRoom = false
     BlessingAltars.AltarSpawn()
   end
