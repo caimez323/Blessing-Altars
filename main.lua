@@ -59,7 +59,7 @@ local modSetting = {
 }
 
 -- ModConfigMenu
-if ModConfigMenu then
+if ModConfigMenu then --Add some customizable settings
   local modName = "Blessing Altars"
     ModConfigMenu.UpdateCategory(modName, {
     Info = {
@@ -98,7 +98,7 @@ if ModConfigMenu then
       end
     })
   
-  ModConfigMenu.AddSpace(modName, "Settings")
+  ModConfigMenu.AddSpace(modName, "Settings") --Space
   
   ModConfigMenu.AddSetting(modName, "Settings", {
       Type = ModConfigMenu.OptionType.NUMBER,
@@ -185,7 +185,7 @@ if ModConfigMenu then
 			return TotalText
 		end
 	})
-  
+  --This setting will be true if the player choose a 1 in 1 chance
   
 end
 
@@ -430,7 +430,7 @@ function BlessingAltars:onBeggar(entity)
 
 BlessingAltars:AddCallback(ModCallbacks.MC_NPC_UPDATE,BlessingAltars.onBeggar, BlessingAltars.ENTITY_BEGGAR)
 
-
+--Our altars are immune to any damage !
 function BlessingAltars:onBeggarDamage(target, dmg, flag, source, countdown)
   return false
 end
@@ -450,7 +450,7 @@ BlessingAltars:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG,BlessingAltars.onPlay
 
 
 function BlessingAltars:onEvaluate(player,cacheFlag)
-
+--Just set correctly the player's stats on any EvaluateItems since bonuses are temporary
   local player = Isaac.GetPlayer(0)
   if cacheFlag == CacheFlag.CACHE_SPEED then
     player.MoveSpeed = player.MoveSpeed + (0.05 * Bonus.Speed)
@@ -466,18 +466,7 @@ end
 
 BlessingAltars:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, BlessingAltars.onEvaluate)
 
---[[
-function PlayerPos()
-  local player = Isaac.GetPlayer(0)
-  local pos = player.Position
-  Isaac.ConsoleOutput("\n")
-  Isaac.ConsoleOutput(pos.X)
-  Isaac.ConsoleOutput(" ,  ")
-  Isaac.ConsoleOutput(pos.Y)
-end
-]]
-
-
+--If the room is cleared, we now have a chance to spawn an altar
 function BlessingAltars:AltarSpawn()
   local room = game:GetRoom()
   local startPos = room:GetBottomRightPos()
@@ -487,14 +476,17 @@ function BlessingAltars:AltarSpawn()
   local vel = Vector(0,0)
   local valid = true
   
+  --Force to ignore the previouslySpawned altar if the chance are 100% to spawn
   if modSetting.ChanceSpawn == 1 or (modSetting.ReducedSpawnStage == 1 and game:GetLevel():GetStage() <= modSetting.ReducedStage ) then
      previouslySpawned = false
   end
   
+  --Or if the setting is off
   if not modSetting.PreviouslyCondition then
     previouslySpawned = false
   end
   
+  --Avoid door (extremly rare anyway)
   if not previouslySpawned then
     for i = 0, 8 do
       door = room:GetDoorSlotPosition(i)
@@ -511,6 +503,7 @@ function BlessingAltars:AltarSpawn()
     
     local chanceSpawn
 
+--Chance to spawn depending on settings
     if game:GetLevel():GetStage() <= modSetting.ReducedStage then
       chanceSpawn = modSetting.ReducedSpawnStage
     else
@@ -525,16 +518,12 @@ function BlessingAltars:AltarSpawn()
   else
     previouslySpawned = false
   end
-  
-  
 end
-
-
 
 
 function BlessingAltars:onUpdate()
   local player = Isaac.GetPlayer(0)
-  
+  --Ability altar
   if Bonus.Ability > 0 and player.FireDelay <= player.MaxFireDelay and player.FireDelay > (player.MaxFireDelay-1) and player:GetShootingJoystick():Length() > 0.1 and not player:HasCollectible(678) then
     local rng = math.random(1, 21 - Bonus.Ability)
     if rng == 1 then
@@ -544,59 +533,15 @@ function BlessingAltars:onUpdate()
     
   end
   
+  --Is the room cleared 
   local room = game:GetRoom()
   if room:GetAliveEnemiesCount() == 0 and EnemiesInRoom then
     EnemiesInRoom = false
     BlessingAltars.AltarSpawn()
   end
   
-  
-  
 end
 BlessingAltars:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE,BlessingAltars.onUpdate)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 BlessingAltars:onRoom()
 BlessingAltars:onLevel()
