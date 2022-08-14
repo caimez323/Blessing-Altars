@@ -283,7 +283,6 @@ function BlessingAltars:onRoom()
     Bonus.Damage = 0
     Bonus.Ability = 0
     Bonus.Tenacity = 0
-    Isaac.GetPlayer(0):AddCoins(15)
     EnemiesInRoom = false
   end
   --NewStage
@@ -482,7 +481,6 @@ end
 
 
 function BlessingAltars:AltarSpawn()
-  Isaac.ConsoleOutput("Try\n")
   local room = game:GetRoom()
   local startPos = room:GetBottomRightPos()
   local freePos = room:FindFreePickupSpawnPosition(startPos)
@@ -490,6 +488,10 @@ function BlessingAltars:AltarSpawn()
   local pos = player.Position
   local vel = Vector(0,0)
   local valid = true
+  
+  if modSetting.ChanceSpawn == 1 or (modSetting.ReducedSpawnStage == 1 and game:GetLevel():GetStage() <= modSetting.ReducedStage ) then
+     previouslySpawned = false
+  end
   
   if not modSetting.PreviouslyCondition then
     previouslySpawned = false
