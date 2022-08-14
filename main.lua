@@ -55,6 +55,7 @@ local modSetting = {
 	ChanceSpawn = 4,
   ReducedStage = 2,
   ReducedSpawnStage = 8,
+  PreviouslyCondition = true,
 }
 
 -- ModConfigMenu
@@ -154,6 +155,36 @@ if ModConfigMenu then
         return TotalText
       end
     })
+  
+    ModConfigMenu.AddSpace(modName, "Settings")
+  
+  ModConfigMenu.AddSetting(modName, "Settings", {
+		Type = ModConfigMenu.OptionType.BOOLEAN,
+		CurrentSetting = function()
+			return modSetting.PreviouslyCondition
+		end,
+		Default = modSetting.PreviouslyCondition,
+		Display = function()
+			local onOff = "Enabled"
+			if modSetting.PreviouslyCondition then
+				onOff = "Disabled"
+			end
+			
+			return "Two altars in a row : " .. onOff
+		end,
+		OnChange = function(currentBool)
+			modSetting.PreviouslyCondition = currentBool
+		end,
+		Info = function()
+			local Text = ""
+      if modSetting.PreviouslyCondition then
+        Text = "not"
+      end
+			local TotalText = "Altars can" .. Text .. " appear two rooms in a row."
+			
+			return TotalText
+		end
+	})
   
   
 end
@@ -451,7 +482,7 @@ end
 
 
 function BlessingAltars:AltarSpawn()
-  
+  Isaac.ConsoleOutput("Try\n")
   local room = game:GetRoom()
   local startPos = room:GetBottomRightPos()
   local freePos = room:FindFreePickupSpawnPosition(startPos)
@@ -459,6 +490,11 @@ function BlessingAltars:AltarSpawn()
   local pos = player.Position
   local vel = Vector(0,0)
   local valid = true
+  
+  if not modSetting.PreviouslyCondition then
+    previouslySpawned = false
+  end
+  
   if not previouslySpawned then
     for i = 0, 8 do
       door = room:GetDoorSlotPosition(i)
@@ -474,14 +510,14 @@ function BlessingAltars:AltarSpawn()
     end
     
     local chanceSpawn
-    
+
     if game:GetLevel():GetStage() <= modSetting.ReducedStage then
       chanceSpawn = modSetting.ReducedSpawnStage
     else
       chanceSpawn = modSetting.ChanceSpawn
     end
-    
-    if not previouslySpawned and valid and (math.random(1,chanceSpawn) == 1) then
+
+    if valid and (math.random(1,chanceSpawn) == 1) then
       Isaac.Spawn(BlessingAltars.ENTITY_BEGGAR,math.random(0,4),0,freePos,vel,player)
       previouslySpawned = true
     end
