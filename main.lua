@@ -52,16 +52,17 @@ BeggarState = {
 
 
 local modSetting = {
-	ChanceSpawn = 4
+	ChanceSpawn = 4,
+  ReducedStage = 2,
+  ReducedSpawnStage = 8,
 }
 
 -- ModConfigMenu
 if ModConfigMenu then
-  Isaac.ConsoleOutput("true")
   local modName = "Blessing Altars"
     ModConfigMenu.UpdateCategory(modName, {
     Info = {
-      "On average, altars spawn 1 in ?? rooms (1 => each room)"
+      "Customize the spawn of the altars !"
     }
     })
 
@@ -82,14 +83,79 @@ if ModConfigMenu then
       end,
       OnChange = function(currentNumber)
         modSetting.ChanceSpawn = currentNumber
-        Isaac.ConsoleOutput(currentNumber)
       end,
       Info = function()
         local spawnRoom = modSetting.ChanceSpawn
-        local TotalText = "Altars will spawn once every " .. spawnRoom .. " rooms."
+        local TotalText
+        if spawnRoom ~= 1 then
+          TotalText = "Altars will spawn once every " .. spawnRoom .. " rooms."
+        else
+          TotalText = "Altars will always spawn."
+        end
+        
         return TotalText
       end
     })
+  
+  ModConfigMenu.AddSpace(modName, "Settings")
+  
+  ModConfigMenu.AddSetting(modName, "Settings", {
+      Type = ModConfigMenu.OptionType.NUMBER,
+      CurrentSetting = function()
+        return modSetting.ReducedStage
+      end,
+      Minimum = 0,
+      Default = modSetting.ReducedStage,
+      Display = function()
+        local valeur = modSetting.ReducedStage
+        
+        return "Chance reduced during the first " .. valeur .. " stages."
+      end,
+      OnChange = function(currentNumber)
+        modSetting.ReducedStage = currentNumber
+      end,
+      Info = function()
+        local reducedStage = modSetting.ReducedStage
+        local TotalText
+        if reducedStage ~= 0 then
+          TotalText = "Altars will spawn less often during the first " .. reducedStage .. " stages."
+        else
+          TotalText = "Altars will not spawn less often during the firsts stages."
+        end
+      
+        return TotalText
+      end
+    })
+  
+  ModConfigMenu.AddSetting(modName, "Settings", {
+      Type = ModConfigMenu.OptionType.NUMBER,
+      CurrentSetting = function()
+        return modSetting.ReducedSpawnStage
+      end,
+      Minimum = 1,
+      Default = modSetting.ReducedSpawnStage,
+      Display = function()
+        local valeur = modSetting.ReducedSpawnStage
+        
+        return "Altar spawnrate in firsts stages : 1 in " .. valeur
+      end,
+      OnChange = function(currentNumber)
+        modSetting.ReducedSpawnStage = currentNumber
+      end,
+      Info = function()
+        local reducedSpawnStage = modSetting.ReducedSpawnStage
+        local TotalText
+        if reducedSpawnStage ~= 1 then
+          TotalText = "Altars will spawn once every " .. reducedSpawnStage .. " rooms during the firsts stages."
+        else
+          TotalText = "Altars will always spawn during the firsts stages."
+        end
+      
+        return TotalText
+      end
+    })
+  
+  
 end
 
 
@@ -248,7 +314,7 @@ function BlessingAltars:onBeggar(entity)
     
     entity.Velocity = data.Position - entity.Position
     
-    if entity.State== BeggarState.IDLE then
+    if entity.State == BeggarState.IDLE then
       if entity.StateFrame == 0 then
         sprite:Play("Idle", false)
       end
@@ -409,10 +475,10 @@ function BlessingAltars:AltarSpawn()
     
     local chanceSpawn
     
-    if game:GetLevel():GetStage() <=2 then
-      chanceSpawn = 8
+    if game:GetLevel():GetStage() <= modSetting.ReducedStage then
+      chanceSpawn = modSetting.ReducedSpawnStage
     else
-      chanceSpawn = 4
+      chanceSpawn = modSetting.ChanceSpawn
     end
     
     if not previouslySpawned and valid and (math.random(1,chanceSpawn) == 1) then
