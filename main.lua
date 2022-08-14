@@ -180,7 +180,7 @@ if ModConfigMenu then
       if modSetting.PreviouslyCondition then
         Text = "not"
       end
-			local TotalText = "Altars can" .. Text .. " appear two rooms in a row."
+			local TotalText = "Altars can" .. Text .. " appear two rooms in a row. (Automatically set for 1 in 1 room spawn)."
 			
 			return TotalText
 		end
@@ -216,11 +216,10 @@ function SpawnRegister()
     if Register[j].Room == game:GetLevel():GetCurrentRoomIndex() then
       local entity = Isaac.Spawn(Register[j].Entity.Type, Register[j].Entity.Variant,0,Register[j].Position, Vector(0,0),nil) --Spawn entity from Register
       if Register[j].Entity.Type == BlessingAltars.ENTITY_BEGGAR then --If spawn the special beggar
-        local beggarFlag = EntityFlag.FLAG_NO_TARGET | EntityFlag.FLAG_NO_STATUS_EFFECTS --Immune
+        local beggarFlag = EntityFlag.FLAG_NO_TARGET | EntityFlag.FLAG_NO_STATUS_EFFECTS --Immune and identification 
         entity:ClearEntityFlags(entity:GetEntityFlags())
         entity:AddEntityFlags(beggarFlag)
         entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYERONLY
-        --entity.SpriteOffset = Vector(0,4) --Fix height of the beggar
         
       end
     end
@@ -326,7 +325,6 @@ function BlessingAltars:onBeggar(entity)
      entity:ClearEntityFlags(entity:GetEntityFlags())
      entity:AddEntityFlags(beggarFlag)
      entity.EntityCollisionClass = EntityCollisionClass.ENTCOLL_PLAYERONLY
-     --entity.SpriteOffset = Vector(0,4)
      local roomIndex = game:GetLevel():GetCurrentRoomIndex()
      table.insert(Register,
        {
@@ -350,9 +348,9 @@ function BlessingAltars:onBeggar(entity)
       end
       
       if (entity.Position - player.Position):Length() <= entity.Size + player.Size then --Collision between beggar and player
-        if player:GetNumCoins() > 0 then --   entity.Variant == 0 and               Can modify prince depending on the variant
+        if player:GetNumCoins() > 14 then --  Can modify prince depending on the variant
           sound:Play(SoundEffect.SOUND_SCAMPER, 1, 0, false,1)
-          player:AddCoins(-1)
+          player:AddCoins(-15)
           --No need to check a RNG since it's 100% chance
           entity.State = BeggarState.PAYPRIZE
           entity.StateFrame = -1
