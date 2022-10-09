@@ -348,9 +348,9 @@ function BlessingAltars:onBeggar(entity)
       end
       
       if (entity.Position - player.Position):Length() <= entity.Size + player.Size then --Collision between beggar and player
-        if player:GetNumCoins() > 14 then --  Can modify prince depending on the variant
+        if player:GetNumCoins() > 4 then --  Can modify prince depending on the variant
           sound:Play(SoundEffect.SOUND_SCAMPER, 1, 0, false,1)
-          player:AddCoins(-15)
+          player:AddCoins(-5)
           --No need to check a RNG since it's 100% chance
           entity.State = BeggarState.PAYPRIZE
           entity.StateFrame = -1
@@ -530,7 +530,6 @@ function BlessingAltars:onUpdate()
       local speed = math.random(8,14)
       player:FireTear(player.Position,player:GetShootingJoystick():Normalized()*(speed*player.ShotSpeed),true,false,false)
     end
-    
   end
   
   --Is the room cleared 
