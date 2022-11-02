@@ -2,14 +2,13 @@
     Hey ! thanks for downloading my mod
     I hope you had/will have fun with this version
     Feel free to check the code here
-    Lytebringr
+    YT/Lytebringr
     Mod made by caimez_
 --]]
 
 --Settings for the mod
 local BlessingAltars = RegisterMod("Blessing Altars",1)
 local game = Game()
-local hud = game:GetHUD()
 local sound = SFXManager()
 
 BlessingAltars.ENTITY_BEGGAR= Isaac.GetEntityTypeByName("Speed Altar")
@@ -259,9 +258,6 @@ function BlessingAltars:onStarted(fromSave)
         }
       )
     end
-    
-    
-    SpawnRegister()--Spawn the register
     
   else
     local level = game:GetLevel()
