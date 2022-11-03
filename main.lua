@@ -48,8 +48,6 @@ BeggarState = {
 }
 
 
-
-
 local modSetting = {
 	ChanceSpawn = 4,
   ReducedStage = 2,

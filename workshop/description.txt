@@ -2,17 +2,22 @@
 
 [b]5 new altars to help through your journey ![/b]
 
-[i]Compatible with [ulr=https://steamcommunity.com/sharedfiles/filedetails/?id=2487535818]Config Mod Menu[/url][/i]
+[i]Compatible with [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2487535818]Mod Config Menu[/url][/i]
+[i]Compatible with both Afterbirth + and Repentance ![/i]
+
 This mod adds 5 altars that will grant you bonuses.
 They randomly appear at the end of a cleared room and can be activated with 5 coins.
-The default spawnrate setting are configurable with Config Mod Menu.
+
+The default spawnrate setting are configurable with Mod Config Menu.
 The default value are:
+
 [list]
 [*]1 in 6 chance during the 2 first stages
 [*]1 in 4 chance after
 [/list]
 
 [u]This section describe the different altars:[/u]
+
 [list]
 [*]Ability Altar : Add a chance to fire an additional other tear [spoiler]Formula :1 in (1,21 - AbilityStack); Max Stack :20[/spoiler]
 [*]Tenacity Altar : Add a chance to negate a damage taken [spoiler]Formula :TenacityStack%; Max Stack :20[/spoiler]
